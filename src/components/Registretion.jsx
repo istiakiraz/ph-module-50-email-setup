@@ -1,8 +1,10 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import React from "react";
+import React, { useState } from "react";
 import { auth } from "../firebase.init";
 
 const Registretion = () => {
+
+    const [success , setSuccess] =useState(false)
 
 
     const handleRegister =(e)=>{
@@ -12,11 +14,14 @@ const Registretion = () => {
 
         console.log(email, password);
 
+        setSuccess('')
+
         // create user with firebase
 
         createUserWithEmailAndPassword(auth, email, password)
         .then(result => {
             console.log(result)
+            setSuccess(true);
         })
         .catch(error => {
             console.log(error)
@@ -94,6 +99,9 @@ const Registretion = () => {
         <br />
 
         <input className="btn bg-cyan-600 mt-5 text-white" type="submit" value='Submit' />
+        {
+            success && <p className="text-green-500">User successfully added</p>
+        }
       </form>
     </div>
   );
