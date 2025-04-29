@@ -1,4 +1,6 @@
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import React from "react";
+import { auth } from "../firebase.init";
 
 const Registretion = () => {
 
@@ -9,17 +11,26 @@ const Registretion = () => {
         const password = e.target.password.value;
 
         console.log(email, password);
+
+        // create user with firebase
+
+        createUserWithEmailAndPassword(auth, email, password)
+        .then(result => {
+            console.log(result)
+        })
+        .catch(error => {
+            console.log(error)
+        })
     }
 
 
 
   return (
-    <div className="text-center">
-      <h1 className="text-4xl text-cyan-600 font-thin my-8 ">This is register</h1>
-      <form onSubmit={handleRegister}>
+    <div className="text-center border p-4 max-w-xl mx-auto">
+      <h1 className="text-4xl text-cyan-600 font-thin my-8 ">Submit this register form </h1>
+      <form className="space-y-4" onSubmit={handleRegister}>
         {/* email part */}
-        <div className="join mb-5">
-          <div>
+        
             <label className="input validator join-item">
               <svg
                 className="h-[1em] opacity-50"
@@ -37,13 +48,12 @@ const Registretion = () => {
                   <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
                 </g>
               </svg>
-              <input type="email" name="email" placeholder="mail@site.com" required />
+              <input type="email" autoComplete="username" name="email" placeholder="mail@site.com" required />
             </label>
             <div className="validator-hint hidden">
               Enter valid email address
             </div>
-          </div>
-        </div>
+          
         <br />
         {/* password part */}
         <label className="input validator">
@@ -66,9 +76,10 @@ const Registretion = () => {
           <input
             type="password"
             name="password"
+            autoComplete="current-password" 
             required
             placeholder="Password"
-            minlength="8"
+            minLength="8"
             pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
             title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
           />
@@ -82,7 +93,7 @@ const Registretion = () => {
         </p>
         <br />
 
-        <input className="btn bg-green-600 mt-5 text-white" type="submit" value='Submit' />
+        <input className="btn bg-cyan-600 mt-5 text-white" type="submit" value='Submit' />
       </form>
     </div>
   );
