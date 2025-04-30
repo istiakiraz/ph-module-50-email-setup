@@ -1,7 +1,8 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
 import React, { useState } from "react";
 import { auth } from "../firebase.init";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { Link } from "react-router";
 
 const Signin = () => {
   const [success, setSuccess] = useState(false);
@@ -12,9 +13,11 @@ const Signin = () => {
     e.preventDefault();
 
     const email = e.target.email.value;
+    const name = e.target.name.value;
+    const photo = e.target.photo.value;
     const password = e.target.password.value;
     const trams =e.target.trams.checked;
-    console.log(email, password, trams);
+    console.log(email, password, trams, name, photo);
 
     
 
@@ -34,10 +37,27 @@ const Signin = () => {
       return;
     }
 
+   
     createUserWithEmailAndPassword(auth, email, password)
       .then((result) => {
         console.log(result);
-        setSuccess(true);
+        sendEmailVerification(auth.currentUser)
+        .then(()=> {
+            setSuccess(true);
+            alert('We will send verification Email. plz verify your email')
+        })
+        const profile ={
+            displayName : name,
+            photoURL : photo,
+        }
+        updateProfile(auth.currentUser, profile)
+        .then(()=>{
+
+        })
+        .catch(error=>{
+            setErrorMessage(error.message)
+        })
+        
       })
       .catch((error) => {
         console.log(error);
@@ -50,6 +70,18 @@ const Signin = () => {
       <div className="card-body">
         <form onSubmit={handleSubmit} className="space-y-3">
           <label className="label">Email</label>
+          <input
+            type="text"
+            name="name"
+            className="input"
+            placeholder="Your Name"
+          />
+          <input
+            type="text"
+            name="photo"
+            className="input"
+            placeholder="Photo URL"
+          />
           <input
             type="email"
             name="email"
@@ -74,10 +106,6 @@ const Signin = () => {
               {showPass ? <FaEyeSlash></FaEyeSlash> : <FaEye></FaEye>}
             </button>
           </div>
-          <div>
-            <a className="link link-hover">Forgot password?</a>
-          </div>
-
           <label className="label mt-2">
             <input type="checkbox" name="trams" className="checkbox" />
             Accept Our Trams and Conditions
@@ -85,6 +113,7 @@ const Signin = () => {
           <br />
 
           <button className="btn btn-neutral mt-4">Login</button>
+          <p>Do you already have account then. plz <Link to='/login' className="text-blue-700 underline">Log In</Link></p>
           {success && <p className="text-green-700">User added successfully</p>}
           {errorMessage && <p className="text-red-700">{errorMessage}</p>}
         </form>
